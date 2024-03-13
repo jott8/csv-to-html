@@ -15,3 +15,4 @@ main = do
     let html      = getHTML htmlTable cssFile
 
     TIO.writeFile outputFileName html
+    putStrLn ("Converting done. Output as been written to '" <> outputFileName <> "'") 
