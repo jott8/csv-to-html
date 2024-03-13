@@ -1,2 +1,4 @@
 samples/*
-main
+Main
+*.hi
+*.o
