@@ -22,4 +22,4 @@ At this point, neither error handling nor string escaping is implemented, which 
 1. three (valid!) command-line-arguments as shown above.
 3. a header line containing M elements (&rarr; M-1 commas).
 4. each line of the body to have M-1 commas as well (empty entries are possible but the right amount of commas is important!).
-5. entries with~~out~~ additional commas that are surrounded by quotation marks.
+5. that entries with additional commas or special characters/whitespaces are surrounded by quotation marks.
