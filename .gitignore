@@ -2,3 +2,4 @@ samples/*
 Main
 *.hi
 *.o
+.DS_STORE
