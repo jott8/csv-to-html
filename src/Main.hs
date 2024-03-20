@@ -1,18 +1,22 @@
-module Main where
+import System.Environment ( getArgs )
 
-import Converter
+import CsvParser          ( Document, Structure (..), parseCSV )
+import HtmlGenerator      ( HTML, wrapTag, row, table, finishWith )
 
-import System.Environment (getArgs)
-import qualified Data.Text.IO as TIO
+customTd :: Structure -> HTML
+customTd (CsvStringLit s) = wrapTag "td" s
+customTd (CsvString s)    = wrapTag "td" s
+customTd (CsvInt i)       = wrapTag "td" (show i)
+
+customTable :: Document -> HTML
+customTable = table . unlines . map (row . concatMap customTd)
 
 main :: IO ()
 main = do
-    (csvFileName:cssFileName:outputFileName:_) <- getArgs
-    csvFile                                    <- TIO.readFile csvFileName
-    cssFile                                    <- TIO.readFile cssFileName
-    
-    let htmlTable = csvToHTMLTable csvFile
-    let html      = getHTML htmlTable cssFile
+    (csvPath:cssPath:outputPath:_) <- getArgs
+    parsed                         <- parseCSV csvPath
+    css                            <- readFile cssPath
 
-    TIO.writeFile outputFileName html
-    putStrLn ("Converting done. Output has been written to '" <> outputFileName <> "'") 
+    writeFile outputPath (finishWith css . customTable $ parsed)
+
+    putStrLn $ "\n Done! Output has been written to '" <> outputPath <> "'"
