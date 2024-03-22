@@ -1,15 +1,10 @@
 import System.Environment ( getArgs )
 
-import CsvParser          ( Document, Structure (..), parseCSV )
-import HtmlGenerator      ( HTML, wrapTag, row, table, finishWith )
-
-customTd :: Structure -> HTML
-customTd (CsvStringLit s) = wrapTag "td" s
-customTd (CsvString s)    = wrapTag "td" s
-customTd (CsvInt i)       = wrapTag "td" (show i)
+import CsvParser          ( Document, parseCSV )
+import HtmlGenerator      ( finishWith, HTML, row, wrapTag, table, td )
 
 customTable :: Document -> HTML
-customTable = table . unlines . map (row . concatMap customTd)
+customTable = table . unlines . map (row . concatMap td)
 
 main :: IO ()
 main = do

@@ -1,37 +1,27 @@
 module CsvParser where
 
-import Combinators         ( char, int, sepBy, stringLit, token, word, Parser (parse) )
-import Control.Applicative ( (<|>) )
-import Data.Maybe          ( catMaybes )
+import Combinators         ( char, endBy, noneOf, Parser (..), sepBy, stringLit )
+import Control.Applicative ( (<|>), many )
+import Data.Maybe          ( fromMaybe )
 
-data Structure 
-    = CsvString String
-    | CsvStringLit String
-    | CsvInt Int
-    deriving Show
-
-type Line     = [Structure]
 type Document = [Line]
+type Line     = [Cell]
+type Cell     = String
 
-handleFile :: String -> [Maybe ([Structure],String)]
-handleFile file = map f lined
-    where lined = lines file
-          f = parse (sepBy (char ',') csvParser)
+csvParser :: Parser Document
+csvParser = line `endBy` eol
 
-csvString :: Parser Structure
-csvString = CsvString <$> token word
+line :: Parser Line
+line = cell `sepBy` char ','
 
-csvStringLit :: Parser Structure
-csvStringLit = CsvStringLit <$> token stringLit
+cell :: Parser Cell
+cell= stringLit <|> many (noneOf ",\n")
 
-csvInt :: Parser Structure
-csvInt = CsvInt <$> token int
+eol :: Parser Char
+eol = char '\n'
 
-csvParser :: Parser Structure
-csvParser = csvString <|> csvStringLit <|> csvInt
-
-parseCSV :: String -> IO Document
+parseCSV :: FilePath -> IO Document
 parseCSV fileName = do
     file <- readFile fileName
-    let parsed = handleFile file
-    return $ map fst . catMaybes $ parsed
+    let parsed = parse csvParser file
+    return $ maybe [] fst parsed
