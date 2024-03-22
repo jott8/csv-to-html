@@ -7,6 +7,9 @@ type HTMLTag = String
 wrapTag :: HTMLTag -> String -> HTML
 wrapTag tag value = mconcat ["<",tag,">",value,"</",tag,">"]
 
+td :: String -> HTML
+td = wrapTag "td"
+
 row :: String -> HTML
 row = wrapTag "tr"
 
